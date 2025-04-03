@@ -1,24 +1,37 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+const fetchUserProfile = async (location: string) => {
+  const APPID = import.meta.env.VITE_OPENWEATHERMAP_API_KEY;
+
+  const URL = `https://api.openweathermap.org/data/2.5/weather?q=${location}&APPID=${APPID}`;
+  const response = await fetch(URL);
+  if (!response.ok) {
+    throw new Error("Failed to fetch user profile");
+  }
+  return response.json();
+};
 
 export function Weather() {
-  const [weatherData, setWeatherData] = useState<any>(null);
+  const location = "Cleveland, OH, USA";
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ["location", location], // Unique key for this query
+    queryFn: () => fetchUserProfile(location), // Function to fetch the data
+    // You can add more options here, like:
+    // staleTime: 5 * 60 * 1000, // Data is considered fresh for 5 minutes
+    // retry: 3, // Retry the request up to 3 times on failure
+  });
 
-  useEffect(() => {
-    const doFetch = async () => {
-      const url =
-        "https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=14c05f03338fbb61fa73bb3f571c96c4";
-      const response = await fetch(url);
-      const data = await response.json();
-      setWeatherData(data);
-    };
+  if (isLoading) {
+    return <div>Loading user profile...</div>;
+  }
 
-    doFetch();
-  }, []);
+  if (isError) {
+    return <div>Error fetching user profile: {error.message}</div>;
+  }
+
   return (
     <div>
-      <h1>Weather Demo</h1>
-      <pre>{JSON.stringify(weatherData, null, 2)}</pre>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 }
