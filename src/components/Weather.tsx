@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 const fetchUserProfile = async (location: string) => {
   const APPID = import.meta.env.VITE_OPENWEATHERMAP_API_KEY;
 
-  const URL = `https://api.openweathermap.org/data/2.5/weather?q=${location}&APPID=${APPID}`;
+  const URL = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&APPID=${APPID}`;
   const response = await fetch(URL);
   if (!response.ok) {
     throw new Error("Failed to fetch user profile");
@@ -12,7 +12,7 @@ const fetchUserProfile = async (location: string) => {
 };
 
 export function Weather() {
-  const location = "Cleveland, OH, USA";
+  const location = "Detroit, MI, USA";
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["location", location], // Unique key for this query
     queryFn: () => fetchUserProfile(location), // Function to fetch the data
