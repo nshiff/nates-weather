@@ -95,6 +95,7 @@ export function Weather() {
           <p>Low: {low}°F</p>
         </div>
       )}
+      <div>{weatherData.weather[0].main}</div>
     </div>
   );
 }
